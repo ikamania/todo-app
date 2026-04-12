@@ -1,4 +1,4 @@
-from storage.json_storage import JSONStorage, Task, BaseStorage
+from storage.storage import JSONStorage, Task, BaseStorage
 
 
 class TaskManager:
