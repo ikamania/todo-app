@@ -1,9 +1,9 @@
-from infrastructure.json_storage import JSONStorage, Task
+from storage.json_storage import JSONStorage, Task, BaseStorage
 
 
 class TaskManager:
-    def __init__(self, storage: JSONStorage) -> None:
-        self.storage = storage 
+    def __init__(self, storage: BaseStorage | None = None) -> None:
+        self.storage = storage or JSONStorage()
         self.tasks: list[Task] = self.storage.load()
 
     def save_all(self) -> None:

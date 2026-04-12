@@ -1,19 +1,31 @@
 import json
+from datetime import datetime
 from typing import TypedDict
+from abc import ABC, abstractmethod
 
 
 class Task(TypedDict):
     id: int
     name: str
-    created_at: str
-    deadline: str
-    status: bool
+    created_at: datetime
+    deadline: datetime
+    complete: bool
 
 
-class JSONStorage:
+class BaseStorage(ABC):
     def __init__(self, path: str = "infrastructure/data/data.json") -> None:
         self.path = path
 
+    @abstractmethod
+    def save(self, tasks: list[Task]) -> None:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def load(self) -> list[Task]:
+        raise NotImplementedError
+
+
+class JSONStorage(BaseStorage):
     def save(self, tasks: list[Task]) -> None:
         with open(self.path, "w") as f:
             json.dump(tasks, f, indent=2)
