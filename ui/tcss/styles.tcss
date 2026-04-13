@@ -1,0 +1,27 @@
+Screen {
+  padding: 1;
+}
+
+TaskWidget {
+    margin-top: 1;
+    height: 7;
+    border: solid red;
+}
+
+.complete {
+  height: 3;
+  width: 30;
+}
+
+.dates, .delete-complete {
+    align: right middle;
+}
+
+.dates {
+  margin-top: 1;
+}
+
+.date {
+  width: 22;
+}
+
