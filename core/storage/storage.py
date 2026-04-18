@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 
 class Task(TypedDict):
-    id: int
+    id: str
     name: str
     created_at: datetime
     deadline: datetime
@@ -13,9 +13,6 @@ class Task(TypedDict):
 
 
 class BaseStorage(ABC):
-    def __init__(self, path: str = "infrastructure/data/data.json") -> None:
-        self.path = path
-
     @abstractmethod
     def save(self, tasks: list[Task]) -> None:
         raise NotImplementedError
@@ -26,9 +23,12 @@ class BaseStorage(ABC):
 
 
 class JSONStorage(BaseStorage):
+    def __init__(self, path: str = "core/storage/data/data.json") -> None:
+        self.path = path
+
     def save(self, tasks: list[Task]) -> None:
         with open(self.path, "w") as f:
-            json.dump(tasks, f, indent=2)
+            json.dump(tasks, f, default=str, indent=2)
 
     def load(self) -> list[Task]:
         try:
@@ -36,7 +36,7 @@ class JSONStorage(BaseStorage):
                 data = json.load(f)
 
                 return data
-        except FileNotFoundError as error:
-            raise error 
+        except FileNotFoundError:
+            raise
         except json.JSONDecodeError:
-            return []
+            raise
