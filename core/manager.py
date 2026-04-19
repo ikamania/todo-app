@@ -1,5 +1,14 @@
 from storage.storage import JSONStorage, Task, BaseStorage
-from typing import Unpack
+from typing import Unpack, TypedDict
+from datetime import datetime
+import uuid
+
+
+class TaskInput(TypedDict):
+    name: str
+    created_at: datetime
+    deadline: datetime
+    complete: bool
 
 
 class TaskManager:
@@ -10,14 +19,19 @@ class TaskManager:
     def save_all(self) -> None:
         self.storage.save(self.tasks)
 
-    def add(self, task: Task) -> None:
-        if any(t["id"] == task["id"] for t in self.tasks):
-            raise ValueError(f"task with id {task['id']} already exists")
+    def add(self, task: TaskInput) -> None:
+        new_task: Task = {
+            **task,
+            "id": str(uuid.uuid4()),
+        }
+        
+        if any(task["id"] == new_task["id"] for task in self.tasks):
+            raise ValueError(f"task with id {new_task['id']} already exists")
 
-        self.tasks.append(task)
+        self.tasks.append(new_task)
         self.save_all()
 
-    def get(self, id: int) -> Task | None:
+    def get(self, id: str) -> Task | None:
         for task in self.tasks:
             if task["id"] == id:
                 return task
@@ -26,7 +40,7 @@ class TaskManager:
     def list(self) -> list[Task]:
         return self.tasks
 
-    def update(self, id_to_update: int, **updates: Unpack[Task]) -> bool:
+    def update(self, id_to_update: str, **updates: Unpack[Task]) -> bool:
         for task in self.tasks:
             if task["id"] == id_to_update:
                 task.update(updates)
@@ -35,7 +49,7 @@ class TaskManager:
                 return True
         return False
 
-    def delete(self, id: int) -> bool:
+    def delete(self, id: str) -> bool:
         for i, task in enumerate(self.tasks):
             if task["id"] == id:
                 del self.tasks[i]
