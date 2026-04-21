@@ -1,59 +1,45 @@
-from storage.storage import JSONStorage, Task, BaseStorage
-from typing import Unpack, TypedDict
-from datetime import datetime
+from core.storage.storage import JSONStorage, BaseStorage
+from core.storage.task import Task
+
 import uuid
-
-
-class TaskInput(TypedDict):
-    name: str
-    created_at: datetime
-    deadline: datetime
-    complete: bool
+from typing import Unpack, Any
 
 
 class TaskManager:
     def __init__(self, storage: BaseStorage | None = None) -> None:
         self.storage = storage or JSONStorage()
-        self.tasks: list[Task] = self.storage.load()
+        self.tasks: dict[str, Task] = self.storage.load()
 
     def save_all(self) -> None:
         self.storage.save(self.tasks)
 
-    def add(self, task: TaskInput) -> None:
-        new_task: Task = {
-            **task,
-            "id": str(uuid.uuid4()),
-        }
-        
-        if any(task["id"] == new_task["id"] for task in self.tasks):
-            raise ValueError(f"task with id {new_task['id']} already exists")
+    def add(self, **task_data: Unpack[Task]) -> None:
+        id: str = str(uuid.uuid4())
 
-        self.tasks.append(new_task)
+        self.tasks[id] = Task(**task_data)
         self.save_all()
 
     def get(self, id: str) -> Task | None:
-        for task in self.tasks:
-            if task["id"] == id:
-                return task
-        return None
+        return self.tasks.get(id)
 
-    def list(self) -> list[Task]:
+    def list(self) -> dict[str, Task]:
         return self.tasks
 
-    def update(self, id_to_update: str, **updates: Unpack[Task]) -> bool:
-        for task in self.tasks:
-            if task["id"] == id_to_update:
-                task.update(updates)
-                self.save_all()
+    def update(self, id: str, updates: dict[str, Any]) -> bool:
+        task = self.tasks.get(id)
+        if task is None:
+            return False
 
-                return True
-        return False
+        task.update(updates) # <
+        self.save_all()
+
+        return True
 
     def delete(self, id: str) -> bool:
-        for i, task in enumerate(self.tasks):
-            if task["id"] == id:
-                del self.tasks[i]
-                self.save_all()
+        if id not in self.tasks:
+            return False
 
-                return True
-        return False
+        del self.tasks[id]
+        self.save_all()
+
+        return True
