@@ -1,5 +1,6 @@
-from core.manager import TaskManager
+from ui.app import TodoApp
 
 if __name__ == "__main__":
-    pass
-    # manager = TaskManager()
+    app = TodoApp()
+
+    app.run()
