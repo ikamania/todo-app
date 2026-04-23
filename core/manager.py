@@ -3,9 +3,36 @@ from core.storage.task import Task
 
 import uuid
 from typing import Unpack, Any
+from abc import ABC, abstractmethod
 
 
-class TaskManager:
+class BaseTaskManager(ABC):
+    @abstractmethod
+    def save_all(self) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def add(self, **task_data: Unpack[Task]) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get(self, id: str) -> Task | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list(self) -> dict[str, Task]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def update(self, id: str, updates: dict[str, Any]) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def delete(self, id: str) -> bool:
+        raise NotImplementedError
+
+
+class TaskManager(BaseTaskManager):
     def __init__(self, storage: BaseStorage | None = None) -> None:
         self.storage = storage or JSONStorage()
         self.tasks: dict[str, Task] = self.storage.load()
