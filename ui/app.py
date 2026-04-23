@@ -2,9 +2,8 @@ from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Header, Footer
 
-from core.storage.task import Task
 from core.manager import BaseTaskManager, TaskManager
-from ui.widgets.task_widget import TaskWidget
+from ui.widgets.task_widget import TaskWidget, TaskAdder
 
 
 class TodoApp(App[None]):
@@ -19,11 +18,14 @@ class TodoApp(App[None]):
         yield Header()
         yield Footer()
         with VerticalScroll():
+            yield TaskAdder()
+
             for id, task in self.manager.list().items():
-                yield TaskWidget(
-                    id, 
+                wd = TaskWidget(
                     task["content"],
                     task["uploaded"].strftime("%d %b %Y • %H:%M"),
                     task["deadline"].strftime("%d %b %Y • %H:%M"),
                     task["complete"],
                 )
+                wd.border_subtitle = id
+                yield wd
