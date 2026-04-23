@@ -1,27 +1,44 @@
+* {
+  text-style: none;
+}
+
 Screen {
   padding: 1;
 }
 
 TaskWidget {
-    margin-top: 1;
-    height: 7;
-    border: solid red;
+  border: round gray;
+  border-subtitle-align: left;
+  border-subtitle-color: $secondary;
+}
+
+TaskAdder {
+  border: solid black;
+  margin-bottom: 1;
+}
+
+.content {
+  padding-left: 1;
+  width: 1fr;
 }
 
 .complete {
   height: 3;
-  width: 30;
 }
 
-.dates, .delete-complete {
-    align: right middle;
+.delete-complete {
+  align: right middle;
 }
 
 .dates {
   margin-top: 1;
+  align: right middle;
 }
 
 .date {
-  width: 22;
+  margin-right: 3;
 }
 
+.task-input {
+    width: 1fr;
+}
