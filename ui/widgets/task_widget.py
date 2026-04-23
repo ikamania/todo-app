@@ -1,12 +1,11 @@
 from textual.app import ComposeResult
 from textual.containers import HorizontalGroup, VerticalGroup
-from textual.widgets import Button, Checkbox, Label
+from textual.widgets import Button, Checkbox, Label, Input
 
 
 class TaskWidget(HorizontalGroup):
-    def __init__(self, task_id: str, content: str, uploaded: str, deadline: str, complete: bool):
+    def __init__(self, content: str, uploaded: str, deadline: str, complete: bool):
             super().__init__()
-            self.task_id = task_id
             self.content = content
             self.uploaded = uploaded
             self.deadline = deadline
@@ -15,7 +14,7 @@ class TaskWidget(HorizontalGroup):
     def compose(self) -> ComposeResult:
         yield VerticalGroup(
             HorizontalGroup (
-                Label(self.content, classes="name"),
+                Label(self.content, classes="content"),
 
                 HorizontalGroup (
                     Checkbox("complete", classes="complete"),
@@ -31,3 +30,16 @@ class TaskWidget(HorizontalGroup):
             )
         )
 
+
+class TaskAdder(HorizontalGroup):
+    def compose(self) -> ComposeResult:
+        yield VerticalGroup(
+            HorizontalGroup (
+                Input(placeholder="Write your task here..", classes="task-input"),
+
+                HorizontalGroup (
+                    Button("add", variant="success"),
+                    classes="delete-complete"
+                ),
+            ),
+        )
