@@ -10,6 +10,12 @@ class TaskWidget(HorizontalGroup):
             self.id = id
             super().__init__()
 
+    class CompleteRequested(Message):
+        def __init__(self, id: str, complete: bool) -> None:
+            self.id = id
+            self.complete = complete
+            super().__init__()
+
     def __init__(self, task_id: str, content: str, uploaded: str, deadline: str, complete: bool):
             super().__init__()
             self.task_id = task_id
@@ -24,7 +30,7 @@ class TaskWidget(HorizontalGroup):
                 Label(self.content, classes="content"),
 
                 HorizontalGroup (
-                    Checkbox("complete", classes="complete"),
+                    Checkbox("complete", value=self.complete, classes="complete"),
                     Button("delete", classes="delete", variant="error"),
                     classes="delete-complete"
                 ),
@@ -40,6 +46,10 @@ class TaskWidget(HorizontalGroup):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.post_message(self.DeleteRequested(self.task_id))
         self.remove()
+
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        self.complete = event.value
+        self.post_message(self.CompleteRequested(self.task_id, self.complete))
 
 class TaskAdder(HorizontalGroup):
     def compose(self) -> ComposeResult:
