@@ -1,3 +1,4 @@
+from datetime import datetime
 from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
@@ -39,3 +40,27 @@ class TodoApp(App[None]):
     @on(TaskWidget.CompleteRequested)
     def on_task_complete(self, message: TaskWidget.CompleteRequested) -> None:
         self.manager.update(message.id, {"complete": message.complete})
+
+    @on(TaskAdder.AddRequested)
+    def on_task_add(self, message: TaskAdder.AddRequested) -> None:
+        uploaded = datetime.now()
+        complete = False
+
+        id = self.manager.add(
+                content=message.content,
+                uploaded=uploaded,
+                deadline=message.deadline,
+                complete=complete,
+            )
+
+        widget = TaskWidget(
+            id,
+            message.content,
+            uploaded.strftime("%d %b %Y • %H:%M"),
+            message.deadline.strftime("%d %b %Y • %H:%M"),
+            complete,
+        )
+        widget.border_subtitle = id
+
+        scroll = self.query_one(VerticalScroll)
+        scroll.mount(widget)
