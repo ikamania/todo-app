@@ -2,6 +2,7 @@ from textual.app import ComposeResult
 from textual.containers import HorizontalGroup, VerticalGroup
 from textual.widgets import Button, Checkbox, Label, Input
 from textual.message import Message
+from datetime import datetime
 
 
 class TaskWidget(HorizontalGroup):
@@ -52,10 +53,17 @@ class TaskWidget(HorizontalGroup):
         self.post_message(self.CompleteRequested(self.task_id, self.complete))
 
 class TaskAdder(HorizontalGroup):
+    class AddRequested(Message):
+        def __init__(self, content: str, deadline: datetime) -> None:
+            self.content = content
+            self.deadline = deadline
+            super().__init__()
+
     def compose(self) -> ComposeResult:
         yield VerticalGroup(
             HorizontalGroup (
                 Input(placeholder="Write your task here..", classes="task-input"),
+                Input(placeholder="YYYY-MM-DD HH:MM - deadline", classes="deadline-input"),
 
                 HorizontalGroup (
                     Button("add", variant="success"),
@@ -63,3 +71,26 @@ class TaskAdder(HorizontalGroup):
                 ),
             ),
         )
+
+    def parse_deadline(self, date: str) -> datetime:
+        return datetime.strptime(date.strip(), "%Y-%m-%d %H:%M")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        content_input = self.query_one(".task-input", Input)
+        deadline_input = self.query_one(".deadline-input", Input)
+    
+        content = content_input.value.strip()
+        if not content:
+            self.notify("Task cannot be empty")
+            return
+
+        try:
+            parsed_deadline = self.parse_deadline(deadline_input.value)
+        except ValueError:
+            self.notify("Invalid format. Use YYYY-MM-DD HH:MM")
+            return
+
+        self.post_message(self.AddRequested(content, parsed_deadline))
+
+        content_input.value = ""
+        deadline_input.value = ""
