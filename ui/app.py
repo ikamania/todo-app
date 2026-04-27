@@ -35,3 +35,7 @@ class TodoApp(App[None]):
     @on(TaskWidget.DeleteRequested)
     def on_task_delete(self, message: TaskWidget.DeleteRequested) -> None:
         self.manager.delete(message.id)
+
+    @on(TaskWidget.CompleteRequested)
+    def on_task_complete(self, message: TaskWidget.CompleteRequested) -> None:
+        self.manager.update(message.id, {"complete": message.complete})
