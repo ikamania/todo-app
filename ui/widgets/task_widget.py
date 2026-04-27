@@ -1,11 +1,18 @@
 from textual.app import ComposeResult
 from textual.containers import HorizontalGroup, VerticalGroup
 from textual.widgets import Button, Checkbox, Label, Input
+from textual.message import Message
 
 
 class TaskWidget(HorizontalGroup):
-    def __init__(self, content: str, uploaded: str, deadline: str, complete: bool):
+    class DeleteRequested(Message):
+        def __init__(self, id: str) -> None:
+            self.id = id
             super().__init__()
+
+    def __init__(self, task_id: str, content: str, uploaded: str, deadline: str, complete: bool):
+            super().__init__()
+            self.task_id = task_id
             self.content = content
             self.uploaded = uploaded
             self.deadline = deadline
@@ -30,6 +37,8 @@ class TaskWidget(HorizontalGroup):
             )
         )
 
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.post_message(self.DeleteRequested(self.task_id))
 
 class TaskAdder(HorizontalGroup):
     def compose(self) -> ComposeResult:
