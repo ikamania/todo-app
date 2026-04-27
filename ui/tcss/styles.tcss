@@ -40,5 +40,9 @@ TaskAdder {
 }
 
 .task-input {
-    width: 1fr;
+  width: 3fr;
+}
+
+.deadline-input {
+  width: 2fr;
 }
