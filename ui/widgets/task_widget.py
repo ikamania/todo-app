@@ -39,6 +39,7 @@ class TaskWidget(HorizontalGroup):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         self.post_message(self.DeleteRequested(self.task_id))
+        self.remove()
 
 class TaskAdder(HorizontalGroup):
     def compose(self) -> ComposeResult:
