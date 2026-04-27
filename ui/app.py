@@ -1,3 +1,4 @@
+from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Header, Footer
@@ -22,6 +23,7 @@ class TodoApp(App[None]):
 
             for id, task in self.manager.list().items():
                 wd = TaskWidget(
+                    id,
                     task["content"],
                     task["uploaded"].strftime("%d %b %Y • %H:%M"),
                     task["deadline"].strftime("%d %b %Y • %H:%M"),
@@ -29,3 +31,7 @@ class TodoApp(App[None]):
                 )
                 wd.border_subtitle = id
                 yield wd
+
+    @on(TaskWidget.DeleteRequested)
+    def on_task_delete(self, message: TaskWidget.DeleteRequested) -> None:
+        self.manager.delete(message.id)
