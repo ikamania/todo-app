@@ -12,7 +12,7 @@ class BaseTaskManager(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def add(self, **task_data: Unpack[Task]) -> None:
+    def add(self, **task_data: Unpack[Task]) -> str:
         raise NotImplementedError
 
     @abstractmethod
@@ -40,11 +40,13 @@ class TaskManager(BaseTaskManager):
     def save_all(self) -> None:
         self.storage.save(self.tasks)
 
-    def add(self, **task_data: Unpack[Task]) -> None:
+    def add(self, **task_data: Unpack[Task]) -> str:
         id: str = str(uuid.uuid4())
 
         self.tasks[id] = Task(**task_data)
         self.save_all()
+
+        return id
 
     def get(self, id: str) -> Task | None:
         return self.tasks.get(id)
